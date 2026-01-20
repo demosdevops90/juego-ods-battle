@@ -3,118 +3,106 @@ import random
 import qrcode
 from io import BytesIO
 
-# 1. Configuración de página (IMPORTANTE: Esto debe ir primero)
-st.set_page_config(page_title="Technovation Battle", layout="wide", initial_sidebar_state="expanded")
+# 1. Configuración de página
+st.set_page_config(page_title="Technovation Battle", layout="wide")
 
 st.markdown("""
     <style>
-    /* 1. FORZAR ANCHO TOTAL Y ELIMINAR MÁRGENES LATERALES */
+    /* 1. FORZAR ANCHO REAL AL 92% Y CENTRAR */
     [data-testid="stAppViewBlockContainer"] {
-        max-width: 100% !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-        padding-top: 1rem !important;
-        margin: 0 auto !important;
+        max-width: 92% !important;
+        padding: 1rem !important;
+        margin: auto !important;
     }
+    .stApp { background-color: #F4F7F9; }
 
-    /* 2. DISEÑO DE TARJETAS UNIFICADO (Ronda y Problemas) */
-    /* Caja de Ronda (Roja) */
+    /* 2. CAJA DE RONDA (ESTILO TARJETA) */
     .criterio-box {
         background-color: #FFFFFF;
-        padding: 15px;
+        padding: 12px;
         border-radius: 12px;
-        border-left: 10px solid #FF4B4B;
+        border-left: 8px solid #FF4B4B;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
         text-align: center;
         margin-bottom: 20px;
-        width: 100%;
     }
-    .criterio-box h2 { color: #1E1E1E !important; font-size: 1.2rem !important; margin: 0; }
-    .criterio-box p { color: #444 !important; font-size: 1rem !important; margin-top: 5px; }
+    .criterio-box h2 { color: #1E1E1E !important; font-size: 1.1rem !important; margin: 0; }
+    .criterio-box p { color: #444 !important; font-size: 0.9rem !important; margin: 0; }
 
-    /* 3. BOTONES QUE SON LA TARJETA (Azules) */
-    /* Estilizamos el botón para que parezca la tarjeta de la ronda */
+    /* 3. BOTONES ESTILO TARJETA (TODO INTEGRADO) */
     .stButton > button {
         width: 100% !important;
+        height: 120px !important; /* Más alto para que quepa todo */
         background-color: #FFFFFF !important;
-        border-radius: 12px !important;
-        border-left: 10px solid #4B90FF !important; /* Borde azul igual al rojo de arriba */
+        color: #1E1E1E !important;
+        border-left: 8px solid #4B90FF !important; /* El borde azul de la tarjeta */
         border-top: none !important;
         border-right: none !important;
         border-bottom: none !important;
+        border-radius: 12px !important;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.1) !important;
-        padding: 20px !important;
-        height: auto !important;
-        min-height: 120px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        white-space: normal !important;
-        color: #1E1E1E !important;
-        transition: all 0.2s ease;
+        text-align: center !important;
+        display: block !important;
+        padding: 10px !important;
+        white-space: normal !important; /* Permite saltos de línea */
     }
-
+    
     .stButton > button:hover {
+        border-left: 8px solid #FF4B4B !important;
         background-color: #F0F7FF !important;
-        transform: translateY(-2px);
     }
 
-    /* 4. VS CENTRADO Y ESTILIZADO */
-    .vs-divider {
-        text-align: center;
-        font-size: 2rem;
+    /* 4. VS CENTRADO EN MEDIO DE LAS TARJETAS */
+    .vs-text {
+        font-size: 1.8rem;
         font-weight: 900;
         color: #FF4B4B;
-        margin: 15px 0;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        text-align: center;
+        margin-top: 40px; /* Alineado al centro de los botones */
     }
 
-    /* 5. SIDEBAR (Recuperar visibilidad y estilo) */
-    [data-testid="stSidebar"] {
-        background-color: #1E1E1E !important;
-    }
-    [data-testid="stSidebar"] * {
+    /* 5. SIDEBAR (MENÚ) */
+    [data-testid="stSidebar"] { background-color: #1E1E1E !important; }
+    [data-testid="stSidebar"] h2, [data-testid="stSidebar"] p {
         color: white !important;
+        text-align: center;
     }
-    /* Botón de reinicio en Sidebar */
+    /* Botón reiniciar legible */
     [data-testid="stSidebar"] .stButton > button {
         background-color: #FF4B4B !important;
-        border: none !important;
-        height: 50px !important;
-        min-height: 50px !important;
-        font-size: 1.1rem !important;
-        font-weight: bold !important;
-        border-radius: 8px !important;
         color: white !important;
+        height: 50px !important;
+        border-radius: 10px !important;
+        border: none !important;
+        font-size: 1rem !important;
     }
 
-    /* Ocultar basura de Streamlit */
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
+    /* EVITAR QUE SE APILEN EN MÓVIL */
+    [data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 10px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.markdown("<h2 style='text-align:center;'>MENÚ</h2>", unsafe_allow_html=True)
+    st.markdown("## MENÚ")
     if st.button("REINICIAR PARTIDA"):
         st.session_state.clear()
         st.rerun()
     st.divider()
-    st.markdown("<p style='text-align:center; font-weight:bold;'>📢 Invita a jugar</p>", unsafe_allow_html=True)
-    
+    st.markdown("<p>📢 Invita a jugar</p>", unsafe_allow_html=True)
     url = "https://juego-ods-battle.streamlit.app/" 
     qr_img = qrcode.make(url)
     buf = BytesIO()
     qr_img.save(buf, format="PNG")
     st.image(buf.getvalue(), use_container_width=True)
 
-# 2. Datos y Lógica
+# 2. Lógica y Datos
 if 'competidores' not in st.session_state:
     PROBLEMAS = [
-        {"nombre": "Comercio local", "desc": "Tiendas de barrio"},
-        {"nombre": "Salud mental joven", "desc": "Ansiedad por redes"},
         {"nombre": "Pobreza menstrual", "desc": "Falta de acceso a higiene"},
         {"nombre": "Desnutrición oculta", "desc": "Carencia de vitaminas"},
         {"nombre": "Brecha digital rural", "desc": "Falta de internet en campo"},
@@ -126,12 +114,14 @@ if 'competidores' not in st.session_state:
         {"nombre": "Acoso y grooming", "desc": "Riesgos para menores"},
         {"nombre": "Transporte seguro", "desc": "Acoso en buses"},
         {"nombre": "Alertas de desastre", "desc": "Avisos de emergencia"},
-        {"nombre": "Ciberestafas", "desc": "Robos a abuelos"},
+        {"nombre": "Ciberestafas", "desc": "Robos a personas mayores"},
+        {"nombre": "Salud mental joven", "desc": "Ansiedad por redes"},
         {"nombre": "Inclusión laboral", "desc": "Barreras trabajo"},
-        {"nombre": "Huella carbono", "desc": "Impacto personal"}
+        {"nombre": "Huella carbono", "desc": "Impacto personal"},
+        {"nombre": "Comercio local", "desc": "Tiendas de barrio"}
     ]
     random.shuffle(PROBLEMAS)
-    st.session_state.competidores = PROBLEMS
+    st.session_state.competidores = PROBLEMAS
     st.session_state.ganadores_ronda_actual = []
     st.session_state.indice_duelo = 0
     st.session_state.ronda_nombre = "Octavos de final"
@@ -156,14 +146,14 @@ def elegir_ganador(elegido):
             etapas = {8: "Cuartos de final", 4: "Semifinal", 2: "Gran final"}
             st.session_state.ronda_nombre = etapas.get(len(st.session_state.competidores), "Final")
 
-# --- UI PRINCIPAL ---
-st.markdown("<h1 style='text-align:center; color:#1E1E1E; margin-bottom:5px;'>🏆 ODS BATTLE</h1>", unsafe_allow_html=True)
+# --- UI ---
+st.markdown("<h1 style='text-align:center; color:black;'>🏆 Technovation Battle</h1>", unsafe_allow_html=True)
 
 if st.session_state.ronda_nombre == "¡Ganador!":
     ganador = st.session_state.ganadores_ronda_actual[0]
     st.balloons()
-    st.markdown(f"<div class='criterio-box' style='padding:40px;'><h2>🏆 ¡GANADOR! 🏆</h2><h1 style='color:#FF4B4B !important; font-size:2.5rem !important;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
-    if st.button("JUGAR DE NUEVO"):
+    st.markdown(f"<div class='criterio-box' style='padding:40px;'><h2>¡Ganador!</h2><h1 style='color:#FF4B4B !important;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
+    if st.button("NUEVA PARTIDA"):
         st.session_state.clear()
         st.rerun()
 else:
@@ -173,17 +163,20 @@ else:
     i = st.session_state.indice_duelo
     p1, p2 = st.session_state.competidores[i], st.session_state.competidores[i+1]
 
-    # Tarjeta 1 (Botón que contiene descripción y nombre)
-    if st.button(f"{p1['desc']}\n\n{p1['nombre']}", key=f"btn_p1_{i}"):
-        elegir_ganador(p1)
-        st.rerun()
+    col1, col_v, col2 = st.columns([10, 2, 10])
+    
+    with col1:
+        # Metemos la descripción y el nombre dentro del mismo botón usando saltos de línea
+        if st.button(f"{p1['desc']}\n\n{p1['nombre']}", key=f"btn_{i}"):
+            elegir_ganador(p1)
+            st.rerun()
 
-    st.markdown('<div class="vs-divider">VS</div>', unsafe_allow_html=True)
+    with col_v:
+        st.markdown('<p class="vs-text">VS</p>', unsafe_allow_html=True)
 
-    # Tarjeta 2
-    if st.button(f"{p2['desc']}\n\n{p2['nombre']}", key=f"btn_p2_{i}"):
-        elegir_ganador(p2)
-        st.rerun()
+    with col2:
+        if st.button(f"{p2['desc']}\n\n{p2['nombre']}", key=f"btn_{i+1}"):
+            elegir_ganador(p2)
+            st.rerun()
 
-    st.markdown("<div style='margin-top:20px;'></div>", unsafe_allow_html=True)
     st.progress((int(i/2) + 1) / (len(st.session_state.competidores)/2))
