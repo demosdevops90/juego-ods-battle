@@ -90,10 +90,10 @@ if 'competidores' not in st.session_state:
     st.session_state.ronda_nombre = "Octavos de Final"
 
 CRITERIOS = {
-    "Octavos de Final": {"t": "📍 RONDA 1: IMPACTO", "p": "¿Cuál es más URGENTE en tu ciudad?"},
-    "Cuartos de Final": {"t": "💻 RONDA 2: VIABILIDAD", "p": "¿Cuál es más fácil de resolver con una APP?"},
-    "Semifinal": {"t": "👤 RONDA 3: USUARIO", "p": "¿Quién tiene usuarios más claros?"},
-    "GRAN FINAL": {"t": "❤️ FINAL: PASIÓN", "p": "¿Cuál les motiva más para trabajar?"}
+    "Octavos de Final": {"t": "📍 IMPACTO", "p": "¿Cuál es más URGENTE en tu ciudad?"},
+    "Cuartos de Final": {"t": "💻 VIABILIDAD", "p": "¿Cuál es más fácil de resolver con una APP?"},
+    "Semifinal": {"t": "👤 USUARIO", "p": "¿Quién tiene usuarios más claros?"},
+    "GRAN FINAL": {"t": "❤️ PASIÓN", "p": "¿Cuál les motiva más para trabajar?"}
 }
 
 def elegir_ganador(elegido):
