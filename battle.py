@@ -55,7 +55,7 @@ with st.sidebar:
     st.divider()
     st.write("📢 **Invita a jugar**")
     # Sustituye esta URL por la URL real de tu app cuando la publiques
-    url = "https://tu-app-technovation.streamlit.app/" 
+    url = "https://juego-ods-battlegit-9vfpqcmbe4scvs3oj8okos.streamlit.app/" 
     qr_img = qrcode.make(url)
     buf = BytesIO()
     qr_img.save(buf, format="PNG")
