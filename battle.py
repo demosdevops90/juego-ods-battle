@@ -8,13 +8,11 @@ st.set_page_config(page_title="Technovation ODS Battle", layout="wide")
 
 st.markdown("""
     <style>
-    /* Ancho al 90% y centrado */
     .block-container {
         max-width: 90% !important;
         padding-top: 1.5rem !important;
         margin: auto;
     }
-
     .stApp { background-color: #F4F7F9; }
     h1, h2, h3, span, p, div { color: #1E1E1E !important; }
     
@@ -24,7 +22,6 @@ st.markdown("""
         margin-bottom: 1rem !important;
     }
 
-    /* Caja de criterios con redacción natural */
     .criterio-box { 
         background-color: #FFFFFF; 
         padding: 15px 25px; 
@@ -44,7 +41,6 @@ st.markdown("""
         line-height: 1.4;
     }
 
-    /* Botones de duelo */
     .stButton>button { 
         width: 100%; 
         height: 110px; 
@@ -54,7 +50,6 @@ st.markdown("""
         font-weight: bold !important; 
         border: 3px solid #4B90FF !important;
         border-radius: 18px !important;
-        text-transform: none !important; /* Evita mayúsculas automáticas */
     }
     
     .stButton>button:hover {
@@ -89,13 +84,13 @@ with st.sidebar:
     st.divider()
     st.markdown("<p style='font-weight: bold;'>📢 Invita a jugar</p>", unsafe_allow_html=True)
     
-    url = "https://tu-app-technovation.streamlit.app/" 
+    url = "https://juego-ods-battle.streamlit.app/" # Actualiza con tu URL real
     qr_img = qrcode.make(url)
     buf = BytesIO()
     qr_img.save(buf, format="PNG")
     st.image(buf.getvalue(), use_container_width=True)
 
-# 2. Base de datos con redacción corregida
+# 2. Base de datos
 PROBLEMAS = [
     {"nombre": "Pobreza menstrual", "cat": "Derechos humanos", "desc": "Falta de acceso a productos de higiene y educación básica."},
     {"nombre": "Desnutrición oculta", "cat": "Necesidades básicas", "desc": "Dietas con carencia de vitaminas y minerales críticos."},
@@ -115,20 +110,21 @@ PROBLEMAS = [
     {"nombre": "Comercio local", "cat": "Acción individual", "desc": "Desventaja de las tiendas de barrio frente a las grandes plataformas."}
 ]
 
-# Inicialización
-if 'competidores' not in st.session_state:
-    random.shuffle(PROBLEMAS)
-    st.session_state.competidores = PROBLEMS
-    st.session_state.ganadores_ronda_actual = []
-    st.session_state.indice_duelo = 0
-    st.session_state.ronda_nombre = "Octavos de final"
-
+# 3. Diccionario de criterios (Claves exactas)
 CRITERIOS = {
     "Octavos de final": {"t": "📍 Ronda 1: Impacto", "p": "¿Cuál de estos problemas es más urgente en tu comunidad?"},
     "Cuartos de final": {"t": "💻 Ronda 2: Viabilidad", "p": "¿Cuál es más sencillo de resolver mediante una aplicación móvil?"},
     "Semifinal": {"t": "👤 Ronda 3: Usuario", "p": "¿Cuál de los dos tiene un grupo de usuarios más claro?"},
     "Gran final": {"t": "❤️ Final: Pasión", "p": "¿Cuál de estas causas les motiva más para trabajar?"}
 }
+
+# Inicialización
+if 'competidores' not in st.session_state:
+    random.shuffle(PROBLEMAS)
+    st.session_state.competidores = PROBLEMAS
+    st.session_state.ganadores_ronda_actual = []
+    st.session_state.indice_duelo = 0
+    st.session_state.ronda_nombre = "Octavos de final"
 
 def elegir_ganador(elegido):
     st.session_state.ganadores_ronda_actual.append(elegido)
@@ -154,7 +150,9 @@ if st.session_state.ronda_nombre == "¡Ganador!":
         st.session_state.clear()
         st.rerun()
 else:
-    info = CRITERIOS[st.session_state.ronda_nombre]
+    # PROTECCIÓN: Si la ronda no está en CRITERIOS, usamos la de Octavos por defecto
+    info = CRITERIOS.get(st.session_state.ronda_nombre, CRITERIOS["Octavos de final"])
+    
     st.markdown(f'''
         <div class="criterio-box">
             <h2 style="margin:0; font-size:1.4rem;">{info["t"]}</h2>
@@ -166,24 +164,19 @@ else:
     p1, p2 = st.session_state.competidores[i], st.session_state.competidores[i+1]
 
     col_izq, col_vs, col_der = st.columns([5, 1, 5])
-    
     with col_izq:
         st.markdown(f"<p class='cat-label'>{p1['cat']}</p>", unsafe_allow_html=True)
         st.markdown(f"<p class='desc-text'>{p1['desc']}</p>", unsafe_allow_html=True)
         if st.button(p1['nombre'], key=f"b{i}"): 
-            elegir_ganador(p1)
-            st.rerun()
-
+            elegir_ganador(p1); st.rerun()
     with col_vs:
         st.markdown("<p class='vs-text'>VS</p>", unsafe_allow_html=True)
-
     with col_der:
         st.markdown(f"<p class='cat-label'>{p2['cat']}</p>", unsafe_allow_html=True)
         st.markdown(f"<p class='desc-text'>{p2['desc']}</p>", unsafe_allow_html=True)
         if st.button(p2['nombre'], key=f"b{i+1}"): 
-            elegir_ganador(p2)
-            st.rerun()
+            elegir_ganador(p2); st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
-    progreso = (int(i/2) + 1) / int(len(st.session_state.competidores)/2)
+    progreso = (int(i/2) + 1) / (len(st.session_state.competidores)/2)
     st.progress(progreso)
