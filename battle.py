@@ -8,9 +8,9 @@ st.set_page_config(page_title="Technovation Battle", layout="wide")
 
 st.markdown("""
     <style>
-    /* 1. CONTENEDOR TOTAL AL 95% */
+    /* 1. CONTENEDOR TOTAL AL 92% */
     [data-testid="stAppViewBlockContainer"] {
-        max-width: 95% !important;
+        max-width: 92% !important;
         padding: 1rem !important;
         margin: auto !important;
     }
@@ -46,14 +46,17 @@ st.markdown("""
         border-bottom: none !important;
         transition: transform 0.2s ease;
         white-space: normal !important;
+        color: #1E1E1E !important;
+        font-size: 1.1rem !important;
+        font-weight: bold !important;
     }
     
     .stButton > button:hover {
-        transform: scale(1.02);
         background-color: #F0F7FF !important;
+        border-left: 10px solid #FF4B4B !important;
     }
 
-    /* 3. VS CENTRADO Y ESTILIZADO */
+    /* 3. VS CENTRADO */
     .vs-divider {
         text-align: center;
         font-size: 1.8rem;
@@ -83,9 +86,9 @@ st.markdown("""
         font-size: 1.1rem !important;
         font-weight: bold !important;
         margin-top: 10px !important;
+        border-left: none !important; /* Quitar borde azul en el botón de reinicio */
     }
 
-    /* Ocultar elementos de Streamlit que sobran */
     header, footer { visibility: hidden; }
     </style>
     """, unsafe_allow_html=True)
@@ -151,25 +154,24 @@ def elegir_ganador(elegido):
             st.session_state.ronda_nombre = etapas.get(len(st.session_state.competidores), "Final")
 
 # --- INTERFAZ PRINCIPAL ---
-st.markdown("<h1 style='text-align:center; color:#1E1E1E; margin-bottom:10px;'>🏆 ODS BATTLE</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center; color:#1E1E1E;'>🏆 ODS BATTLE</h1>", unsafe_allow_html=True)
 
 if st.session_state.ronda_nombre == "¡Ganador!":
     ganador = st.session_state.ganadores_ronda_actual[0]
     st.balloons()
-    st.markdown(f"<div class='criterio-box' style='padding:40px;'><h2>🏆 ¡GANADOR! 🏆</h2><h1 style='color:#FF4B4B !important; font-size:2.5rem !important;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='criterio-box' style='padding:40px;'><h2>🏆 ¡GANADOR! 🏆</h2><h1 style='color:#FF4B4B !important;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
     if st.button("JUGAR DE NUEVO"):
         st.session_state.clear()
         st.rerun()
 else:
-    # Mostrar Ronda
     info = CRITERIOS.get(st.session_state.ronda_nombre, CRITERIOS["Octavos de final"])
     st.markdown(f'<div class="criterio-box"><h2>{info["t"]}</h2><p>{info["p"]}</p></div>', unsafe_allow_html=True)
 
     i = st.session_state.indice_duelo
-    p1, p2 = st.session_state.competidores[i], st.session_state.competidores[i+1]
+    p1 = st.session_state.competidores[i]
+    p2 = st.session_state.competidores[i+1]
 
     # OPCIÓN 1
-    # Usamos saltos de línea para separar descripción de nombre dentro del botón
     if st.button(f"{p1['desc'].upper()}\n\n{p1['nombre']}", key=f"p1_{i}"):
         elegir_ganador(p1)
         st.rerun()
@@ -178,7 +180,7 @@ else:
     st.markdown('<div class="vs-divider">VS</div>', unsafe_allow_html=True)
 
     # OPCIÓN 2
-    if st.button(f"{p2['desc'].upper()}\n\n{p2['nombre']}", key=p2_f"{i}"):
+    if st.button(f"{p2['desc'].upper()}\n\n{p2['nombre']}", key=f"p2_{i}"):
         elegir_ganador(p2)
         st.rerun()
 
