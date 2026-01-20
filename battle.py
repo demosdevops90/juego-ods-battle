@@ -1,5 +1,7 @@
 import streamlit as st
 import random
+import qrcode
+from io import BytesIO
 
 # 1. Configuración de página y Estilos de alto contraste
 st.set_page_config(page_title="Technovation ODS Battle", layout="centered")
@@ -44,7 +46,22 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 2. Base de datos renovada
+# --- BARRA LATERAL CON QR ---
+with st.sidebar:
+    st.header("Menú")
+    if st.button("⚠️ Reiniciar Juego"):
+        st.session_state.clear()
+        st.rerun()
+    st.divider()
+    st.write("📢 **Invita a jugar**")
+    # Sustituye esta URL por la URL real de tu app cuando la publiques
+    url = "https://tu-app-technovation.streamlit.app/" 
+    qr_img = qrcode.make(url)
+    buf = BytesIO()
+    qr_img.save(buf, format="PNG")
+    st.image(buf.getvalue(), caption="Escanea para unirte")
+
+# 2. Base de datos
 PROBLEMAS = [
     {"nombre": "Pobreza Menstrual", "cat": "Derechos Humanos", "desc": "Falta de acceso a productos y educación."},
     {"nombre": "Desnutrición Oculta", "cat": "Necesidades Básicas", "desc": "Dietas pobres en vitaminas críticas."},
@@ -63,11 +80,6 @@ PROBLEMAS = [
     {"nombre": "Huella Carbono", "cat": "Acción Individual", "desc": "Dificultad para medir el impacto personal."},
     {"nombre": "Comercio Local", "cat": "Acción Individual", "desc": "Dificultad de competir con grandes tiendas."}
 ]
-
-# FIX: Si cambió la estructura de datos, reiniciamos la sesión para evitar el KeyError
-if 'competidores' in st.session_state:
-    if 'desc' not in st.session_state.competidores[0]:
-        st.session_state.clear()
 
 # Inicialización
 if 'competidores' not in st.session_state:
