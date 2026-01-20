@@ -110,7 +110,7 @@ def elegir_ganador(elegido):
             st.session_state.ronda_nombre = nombres.get(len(st.session_state.competidores), "Final")
 
 # UI
-st.title("🏆 Technovation Battle")
+st.title("🏆 ODS 1vs1 Battle")
 
 if st.session_state.ronda_nombre == "¡GANADOR!":
     ganador = st.session_state.ganadores_ronda_actual[0]
