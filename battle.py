@@ -8,123 +8,123 @@ st.set_page_config(page_title="Technovation Battle", layout="wide")
 
 st.markdown("""
     <style>
-    /* FORZAR ANCHO REAL AL 95% */
+    /* 1. FORZAR ANCHO Y ELIMINAR MÁRGENES EN MÓVIL */
     [data-testid="stAppViewBlockContainer"] {
-        max-width: 95% !important;
-        padding-left: 2% !important;
-        padding-right: 2% !important;
-        padding-top: 1rem !important;
-        margin: auto !important;
+        max-width: 100% !important;
+        padding: 0.5rem !important;
+        margin: 0 !important;
+    }
+    
+    /* 2. EVITAR QUE LAS COLUMNAS SE APILEN EN MÓVIL (TRUCO FLEX) */
+    [data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 5px !important;
+    }
+    
+    [data-testid="column"] {
+        width: auto !important;
+        flex: 1 1 auto !important;
     }
 
-    /* Fondo y visibilidad */
+    /* 3. TÍTULO Y TEXTOS VISIBLES */
     .stApp { background-color: #F4F7F9; }
     
-    /* Título compacto */
     h1 {
-        font-size: 1.6rem !important;
+        font-size: 1.5rem !important;
         text-align: center;
-        margin: 0 !important;
-        padding: 0 0 10px 0 !important;
         color: #1E1E1E !important;
+        margin: 0 !important;
+        padding: 5px !important;
     }
 
-    /* Criterio centrado y compacto */
+    /* Caja de criterio corregida (Texto negro) */
     .criterio-box { 
         background-color: #FFFFFF; 
         padding: 10px; 
         border-radius: 10px; 
-        border-left: 8px solid #FF4B4B; 
+        border-left: 6px solid #FF4B4B; 
         box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
         margin-bottom: 10px;
         text-align: center;
     }
+    .criterio-box h2 { color: #1E1E1E !important; font-size: 1.1rem !important; margin: 0 !important; }
+    .criterio-box p { color: #444444 !important; font-size: 0.9rem !important; margin: 0 !important; }
 
-    /* BOTONES DE DUELO: Forzar que ocupen el ancho */
+    /* 4. BOTONES QUE OCUPAN EL ANCHO */
     .stButton > button { 
         width: 100% !important; 
-        height: 85px !important;
+        height: 80px !important;
         background-color: #FFFFFF !important;
         color: #4B90FF !important;
-        font-size: 1.2rem !important; 
+        font-size: 1rem !important; 
         font-weight: bold !important; 
-        border: 4px solid #4B90FF !important;
-        border-radius: 15px !important;
-        white-space: normal !important; /* Permite que el texto salte de línea */
-    }
-    
-    .stButton > button:hover {
-        background-color: #4B90FF !important;
-        color: white !important;
+        border: 3px solid #4B90FF !important;
+        border-radius: 12px !important;
+        padding: 2px !important;
     }
     
     .vs-text { 
         text-align: center; 
-        font-size: 30px; 
+        font-size: 20px; 
         font-weight: 900; 
-        color: #FF4B4B !important; 
-        line-height: 85px; /* Alinea con el centro de los botones */
+        color: #FF4B4B !important;
         margin: 0 !important;
+        min-width: 30px;
     }
 
     .desc-text {
         text-align: center;
-        font-size: 0.9rem;
-        min-height: 35px;
-        margin-bottom: 5px;
-        color: #444 !important;
+        font-size: 0.75rem;
+        color: #555555 !important;
+        line-height: 1;
+        margin-bottom: 3px;
     }
 
-    .cat-label {
-        text-align: center;
-        font-size: 0.75rem;
-        font-weight: bold;
-        color: #888 !important;
-        margin-bottom: 2px;
+    /* Texto sidebar blanco */
+    [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+        color: white !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- BARRA LATERAL (QR Y MENÚ) ---
+# --- BARRA LATERAL ---
 with st.sidebar:
-    st.markdown("<h2 style='color:white;'>Configuración</h2>", unsafe_allow_html=True)
-    if st.button("⚠️ Reiniciar partida"):
+    st.markdown("## Configuración")
+    if st.button("⚠️ Reiniciar"):
         st.session_state.clear()
         st.rerun()
-    
     st.divider()
-    
-    # Texto con color forzado para que se vea sí o sí
-    st.markdown("<h3 style='color:white !important; background-color:transparent;'>📢 Invita a jugar</h3>", unsafe_allow_html=True)
-    
-    # Cambia esta URL por la tuya
-    url = "https://juego-ods-battle.streamlit.app/" 
+    st.markdown("### 📢 Invita a jugar")
+    url = "https://tu-app.streamlit.app" 
     qr_img = qrcode.make(url)
     buf = BytesIO()
     qr_img.save(buf, format="PNG")
     st.image(buf.getvalue(), use_container_width=True)
 
-# 2. Base de datos corregida (Natural)
-PROBLEMAS = [
-    {"nombre": "Pobreza menstrual", "cat": "Derechos humanos", "desc": "Falta de acceso a productos de higiene."},
-    {"nombre": "Desnutrición oculta", "cat": "Necesidades básicas", "desc": "Carencia de vitaminas críticas."},
-    {"nombre": "Brecha digital rural", "cat": "Derechos humanos", "desc": "Falta de internet en el campo."},
-    {"nombre": "Acceso a agua limpia", "cat": "Necesidades básicas", "desc": "Contaminación de fuentes locales."},
-    {"nombre": "Moda rápida", "cat": "Medio ambiente", "desc": "Contaminación por descarte masivo de ropa."},
-    {"nombre": "Calidad del aire", "cat": "Medio ambiente", "desc": "Polución cerca de las escuelas."},
-    {"nombre": "Protección de abejas", "cat": "Medio ambiente", "desc": "Uso de pesticidas peligrosos."},
-    {"nombre": "Desperdicio de energía", "cat": "Medio ambiente", "desc": "Consumo en edificios vacíos."},
-    {"nombre": "Acoso y grooming", "cat": "Seguridad", "desc": "Riesgos para menores en internet."},
-    {"nombre": "Transporte seguro", "cat": "Seguridad", "desc": "Acoso en paradas y buses."},
-    {"nombre": "Alertas de desastre", "cat": "Seguridad", "desc": "Sistemas de aviso ineficientes."},
-    {"nombre": "Ciberestafas", "cat": "Seguridad", "desc": "Robos a personas mayores online."},
-    {"nombre": "Salud mental joven", "cat": "Social", "desc": "Ansiedad por redes sociales."},
-    {"nombre": "Inclusión laboral", "cat": "Social", "desc": "Falta de empleo para discapacitados."},
-    {"nombre": "Huella de carbono", "cat": "Acción individual", "desc": "Dificultad para medir el impacto personal."},
-    {"nombre": "Comercio local", "cat": "Acción individual", "desc": "Desventaja frente a grandes tiendas."}
-]
-
+# 2. Base de datos
 if 'competidores' not in st.session_state:
+    PROBLEMAS = [
+        {"nombre": "Pobreza menstrual", "cat": "Derechos humanos", "desc": "Falta de acceso a higiene."},
+        {"nombre": "Desnutrición oculta", "cat": "Necesidades básicas", "desc": "Carencia de vitaminas."},
+        {"nombre": "Brecha digital rural", "cat": "Derechos humanos", "desc": "Falta de internet en campo."},
+        {"nombre": "Acceso a agua limpia", "cat": "Necesidades básicas", "desc": "Agua contaminada."},
+        {"nombre": "Moda rápida", "cat": "Medio ambiente", "desc": "Desecho masivo de ropa."},
+        {"nombre": "Calidad del aire", "cat": "Medio ambiente", "desc": "Humo cerca de escuelas."},
+        {"nombre": "Protección de abejas", "cat": "Medio ambiente", "desc": "Uso de pesticidas."},
+        {"nombre": "Desperdicio energía", "cat": "Medio ambiente", "desc": "Luces encendidas sin uso."},
+        {"nombre": "Acoso y grooming", "cat": "Seguridad", "desc": "Riesgos para menores online."},
+        {"nombre": "Transporte seguro", "cat": "Seguridad", "desc": "Acoso en buses y paradas."},
+        {"nombre": "Alertas de desastre", "cat": "Seguridad", "desc": "Avisos de emergencia malos."},
+        {"nombre": "Ciberestafas", "cat": "Seguridad", "desc": "Robos a abuelos online."},
+        {"nombre": "Salud mental joven", "cat": "Social", "desc": "Ansiedad por redes."},
+        {"nombre": "Inclusión laboral", "cat": "Social", "desc": "Barreras para discapacitados."},
+        {"nombre": "Huella de carbono", "cat": "Individual", "desc": "Medir el impacto personal."},
+        {"nombre": "Comercio local", "cat": "Individual", "desc": "Tiendas vs plataformas."}
+    ]
     random.shuffle(PROBLEMAS)
     st.session_state.competidores = PROBLEMAS
     st.session_state.ganadores_ronda_actual = []
@@ -157,27 +157,26 @@ st.markdown("<h1>🏆 Technovation Battle</h1>", unsafe_allow_html=True)
 if st.session_state.ronda_nombre == "¡Ganador!":
     ganador = st.session_state.ganadores_ronda_actual[0]
     st.balloons()
-    st.markdown(f"<div style='text-align:center;'><h2>¡Ganador!</h2><h1 style='color:#FF4B4B !important; font-size:3rem !important;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
-    if st.button("Reiniciar todo"):
+    st.markdown(f"<div style='text-align:center;'><h2>¡Ganador!</h2><h1 style='color:#FF4B4B !important;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
+    if st.button("Reiniciar"):
         st.session_state.clear()
         st.rerun()
 else:
     info = CRITERIOS.get(st.session_state.ronda_nombre, CRITERIOS["Octavos de final"])
     st.markdown(f'''
         <div class="criterio-box">
-            <h2 style="margin:0; font-size:1.1rem;">{info["t"]}</h2>
-            <p style="margin:0; font-size:0.9rem;">{info["p"]}</p>
+            <h2>{info["t"]}</h2>
+            <p>{info["p"]}</p>
         </div>
     ''', unsafe_allow_html=True)
 
     i = st.session_state.indice_duelo
     p1, p2 = st.session_state.competidores[i], st.session_state.competidores[i+1]
 
-    # PROPORCIÓN PARA QUE LOS BOTONES SEAN ANCHOS
-    col_izq, col_vs, col_der = st.columns([12, 3, 12])
+    # CONTENEDOR DE DUELO
+    col_izq, col_vs, col_der = st.columns([10, 2, 10])
     
     with col_izq:
-        st.markdown(f"<p class='cat-label'>{p1['cat']}</p>", unsafe_allow_html=True)
         st.markdown(f"<p class='desc-text'>{p1['desc']}</p>", unsafe_allow_html=True)
         if st.button(p1['nombre'], key=f"b{i}"): 
             elegir_ganador(p1); st.rerun()
@@ -186,7 +185,6 @@ else:
         st.markdown("<p class='vs-text'>VS</p>", unsafe_allow_html=True)
 
     with col_der:
-        st.markdown(f"<p class='cat-label'>{p2['cat']}</p>", unsafe_allow_html=True)
         st.markdown(f"<p class='desc-text'>{p2['desc']}</p>", unsafe_allow_html=True)
         if st.button(p2['nombre'], key=f"b{i+1}"): 
             elegir_ganador(p2); st.rerun()
