@@ -8,7 +8,7 @@ st.set_page_config(page_title="Technovation Battle", layout="wide")
 
 st.markdown("""
     <style>
-    /* 1. CONTENEDOR PRINCIPAL AL 95% */
+    /* 1. CONTENEDOR AL 95% */
     [data-testid="stAppViewBlockContainer"] {
         max-width: 95% !important;
         padding: 0.5rem !important;
@@ -16,18 +16,21 @@ st.markdown("""
     }
     .stApp { background-color: #F4F7F9; }
 
-    /* 2. DISEÑO DE TARJETA UNIFICADA (Ronda y Problemas) */
+    /* 2. DISEÑO DE TARJETA INTEGRADA */
     .criterio-box, .problem-card {
         background-color: #FFFFFF;
-        padding: 12px;
+        padding: 10px;
         border-radius: 12px;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
         text-align: center;
         margin-bottom: 5px;
+        border-left: 8px solid #FF4B4B; /* Rojo por defecto */
     }
     
-    .criterio-box { border-left: 8px solid #FF4B4B; margin-bottom: 15px; }
-    .problem-card { border-left: 8px solid #4B90FF; }
+    .problem-card { 
+        border-left: 8px solid #4B90FF; /* Azul para problemas */
+        padding-bottom: 0px; /* Pegar el botón al borde inferior */
+    }
 
     /* 3. TEXTOS */
     h1 { font-size: 1.5rem !important; text-align: center; color: #1E1E1E !important; margin: 0 0 10px 0 !important; }
@@ -36,52 +39,54 @@ st.markdown("""
     
     .desc-text { 
         color: #666 !important; 
-        font-size: 0.8rem; 
-        font-weight: bold;
-        text-transform: uppercase;
-        margin-bottom: 4px;
+        font-size: 0.85rem; 
+        font-weight: normal;
+        margin-bottom: 2px;
+        display: block;
     }
 
-    /* 4. BOTONES (NOMBRE DEL PROBLEMA) */
+    /* 4. BOTONES INTEGRADOS (FONDO TRANSPARENTE) */
     .stButton > button {
         width: 100% !important;
-        height: 70px !important;
-        background-color: #4B90FF !important;
-        color: white !important;
-        font-size: 1.1rem !important;
+        height: auto !important;
+        min-height: 50px;
+        background-color: transparent !important; /* INTEGRACIÓN TOTAL */
+        color: #4B90FF !important; /* Texto en azul */
+        font-size: 1.2rem !important;
         font-weight: bold !important;
         border: none !important;
-        border-radius: 8px !important;
-        line-height: 1.2 !important;
+        padding: 0px 0px 10px 0px !important;
+        text-transform: none !important;
     }
     
-    /* 5. BOTÓN REINICIAR LEYBLE */
-    [data-testid="stSidebar"] .stButton > button {
-        background-color: #FF4B4B !important;
-        font-size: 1rem !important;
-        height: 45px !important;
+    .stButton > button:hover {
+        color: #FF4B4B !important;
     }
 
-    /* 6. ALINEACIÓN HORIZONTAL FORZADA (MÓVIL) */
+    /* 5. SIDEBAR Y BOTÓN REINICIAR */
+    [data-testid="stSidebar"] { background-color: #1E1E1E !important; }
+    [data-testid="stSidebar"] .stButton > button {
+        background-color: #FF4B4B !important;
+        color: white !important;
+        font-size: 1rem !important;
+        height: 50px !important;
+        border-radius: 10px !important;
+        margin-top: 20px;
+    }
+
+    /* 6. VS CENTRADO Y COLUMNAS */
     [data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 5px !important;
     }
     
-    /* VS CENTRADO */
-    .vs-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-    }
     .vs-text {
-        font-size: 1.8rem;
+        font-size: 2rem;
         font-weight: 900;
         color: #FF4B4B;
+        text-align: center;
         margin: 0 !important;
     }
     </style>
@@ -89,12 +94,12 @@ st.markdown("""
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.markdown("<h2 style='color:white;'>MENÚ</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white; text-align:center;'>MENÚ</h2>", unsafe_allow_html=True)
     if st.button("REINICIAR PARTIDA"):
         st.session_state.clear()
         st.rerun()
     st.divider()
-    st.markdown("<h3 style='color:white;'>📢 Invita a jugar</h3>", unsafe_allow_html=True)
+    st.markdown("<p style='color:white; text-align:center; font-weight:bold;'>📢 Invita a jugar</p>", unsafe_allow_html=True)
     url = "https://juego-ods-battle.streamlit.app/" 
     qr_img = qrcode.make(url)
     buf = BytesIO()
@@ -153,7 +158,7 @@ st.markdown("<h1>🏆 Technovation Battle</h1>", unsafe_allow_html=True)
 if st.session_state.ronda_nombre == "¡Ganador!":
     ganador = st.session_state.ganadores_ronda_actual[0]
     st.balloons()
-    st.markdown(f"<div class='criterio-box'><h2>¡Ganador!</h2><h1 style='color:#FF4B4B !important;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='criterio-box' style='padding:40px;'><h2>¡Ganador!</h2><h1 style='color:#FF4B4B !important; font-size:2.5rem !important;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
     if st.button("NUEVA PARTIDA"):
         st.session_state.clear()
         st.rerun()
@@ -164,23 +169,23 @@ else:
     i = st.session_state.indice_duelo
     p1, p2 = st.session_state.competidores[i], st.session_state.competidores[i+1]
 
-    # Columnas de duelo
+    # DUELO
     col1, col_v, col2 = st.columns([10, 3, 10])
     
     with col1:
-        st.markdown(f'<div class="problem-card"><p class="desc-text">{p1["desc"]}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="problem-card"><span class="desc-text">{p1["desc"]}</span>', unsafe_allow_html=True)
         if st.button(p1['nombre'], key=f"btn_{i}"):
-            elegir_ganador(p1)
-            st.rerun()
+            elegir_ganador(p1); st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with col_v:
-        st.markdown('<div class="vs-container"><p class="vs-text">VS</p></div>', unsafe_allow_html=True)
+        st.markdown('<p class="vs-text">VS</p>', unsafe_allow_html=True)
 
     with col2:
-        st.markdown(f'<div class="problem-card"><p class="desc-text">{p2["desc"]}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="problem-card"><span class="desc-text">{p2["desc"]}</span>', unsafe_allow_html=True)
         if st.button(p2['nombre'], key=f"btn_{i+1}"):
-            elegir_ganador(p2)
-            st.rerun()
+            elegir_ganador(p2); st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("<div style='margin-top:15px;'></div>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     st.progress((int(i/2) + 1) / (len(st.session_state.competidores)/2))
