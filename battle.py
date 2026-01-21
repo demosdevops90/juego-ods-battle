@@ -6,72 +6,84 @@ from io import BytesIO
 # 1. Configuración de página
 st.set_page_config(page_title="Technovation Battle", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. CSS "Rompe-Contenedores" para forzar el ancho completo
+# 2. CSS para forzar Layout Horizontal "Side-by-Side"
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
-    /* 1. Forzar el contenedor raíz a ocupar todo el ancho */
+    /* Reset de visualización */
+    html, body, [data-testid="stAppViewBlockContainer"] {
+        max-height: 100vh;
+        overflow: hidden !important;
+        font-family: 'Space Grotesk', sans-serif;
+        background-color: #181c26;
+    }
+
+    .stApp { background-color: #181c26; }
+    header, footer {visibility: hidden;}
+
+    /* Contenedor principal centrado al 95% */
     [data-testid="stAppViewBlockContainer"] {
-        max-width: 100% !important;
-        width: 100% !important;
-        padding: 1rem !important;
-        margin: 0 !important;
+        max-width: 95% !important;
+        margin: auto !important;
+        padding: 1rem 0.5rem !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
-    /* 2. Quitar el límite de ancho de los bloques verticales internos */
-    [data-testid="stVerticalBlock"] {
-        width: 100% !important;
-        align-items: center !important;
-    }
-
-    /* 3. FORZAR FILA HORIZONTAL PURA (Evita que se pongan uno encima de otro) */
+    /* FORZAR FILA HORIZONTAL EN CUALQUIER PANTALLA */
     [data-testid="stHorizontalBlock"] {
         display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important; /* Prohibido bajar de línea */
-        width: 100% !important;
-        gap: 2px !important;
+        flex-direction: row !important; /* Siempre horizontal */
+        flex-wrap: nowrap !important;  /* No permite saltar de línea */
+        align-items: center !important;
         justify-content: center !important;
+        gap: 2px !important; /* Espacio mínimo */
+        width: 100% !important;
     }
 
-    /* 4. Ajuste de columnas para que no se achiquen */
+    /* Ajuste de columnas para que no se colapsen */
     [data-testid="column"] {
-        flex: 1 1 45% !important; /* Cada botón toma el 45% */
+        width: 45% !important;
         min-width: 45% !important;
-        max-width: 48% !important;
+        flex: 1 1 auto !important;
     }
     
+    /* Columna del VS (estrecha) */
     [data-testid="column"]:nth-of-type(2) {
-        flex: 0 0 auto !important;
+        width: 10% !important;
         min-width: 40px !important;
-        width: 40px !important;
+        flex: 0 0 auto !important;
+        display: flex;
+        justify-content: center;
     }
 
-    /* 5. DISEÑO DE BOTONES AL 15% DE ALTO */
+    /* BOTONES AL 15% DE ALTO */
     div.stButton > button {
         width: 100% !important;
         height: 15vh !important;
+        min-height: 15vh !important;
         background-color: #272D3A !important;
         color: white !important;
         border-radius: 0.8rem !important;
-        border: 2px solid #00bdc7 !important; /* Borde visible para depurar */
+        border: 2px solid rgba(255, 255, 255, 0.1) !important;
+        padding: 0.5rem !important;
+        font-size: 0.8rem !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
-        padding: 5px !important;
     }
 
-    /* Diferenciar colores */
-    [data-testid="column"]:nth-of-type(3) button {
-        border-color: #EE40DA !important;
-    }
+    /* Decoración de bordes */
+    [data-testid="column"]:nth-of-type(1) button { border-color: #00bdc7 !important; }
+    [data-testid="column"]:nth-of-type(3) button { border-color: #EE40DA !important; }
 
-    /* VS Circle */
+    /* VS CIRCLE */
     .vs-circle {
-        width: 38px;
-        height: 38px;
+        width: 35px;
+        height: 35px;
         background: #181c26;
         border: 2px solid #EE40DA;
         border-radius: 50%;
@@ -86,16 +98,14 @@ st.markdown("""
 
     .glass-header {
         background: rgba(24, 28, 38, 0.7);
+        backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
         padding: 0.5rem;
         text-align: center;
-        width: 95%;
+        width: 100%;
         margin-bottom: 1rem;
     }
-
-    header, footer {visibility: hidden;}
-    .stApp { background-color: #181c26; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -149,7 +159,7 @@ else:
     i = st.session_state.indice_duelo
     p1, p2 = st.session_state.competidores[i], st.session_state.competidores[i+1]
     
-    # RENDER DE BATALLA
+    # Render de Batalla
     col1, col_v, col2 = st.columns([10, 2, 10])
     
     with col1:
@@ -167,6 +177,7 @@ else:
             st.session_state.indice_duelo += 2
             st.rerun()
 
+    # Barra inferior
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     progreso = (int(i/2) + 1) / (len(st.session_state.competidores)/2)
     st.progress(progreso)
