@@ -101,14 +101,14 @@ st.markdown("""
 # --- LÓGICA DE DATOS ---
 if 'competidores' not in st.session_state:
     PROBLEMAS = [
-        {"nombre": "Contaminación Ropa", "desc": "Desecho masivo de textiles"},
-        {"nombre": "Engaños Online", "desc": "Adultos contactando menores"},
-        {"nombre": "Pobreza menstrual", "desc": "Falta de higiene"},
-        {"nombre": "Acceso Agua", "desc": "Agua no potable"},
-        {"nombre": "Brecha Digital", "desc": "Falta de internet"},
-        {"nombre": "Salud Mental", "desc": "Ansiedad en jóvenes"},
-        {"nombre": "Ciberestafas", "desc": "Robos a abuelos"},
-        {"nombre": "Moda Rápida", "desc": "Impacto ambiental"}
+        {"nombre": "ODS#12 Consumo Responsable", "desc": "Contaminación por desecho masivo de textiles y microplásticos."},
+        {"nombre": "ODS#16 Paz e Instituciones", "desc": "Engaños online y grooming: adultos contactando menores en redes."},
+        {"nombre": "ODS#5 Igualdad de Género", "desc": "Pobreza menstrual: falta de acceso a productos de higiene básica."},
+        {"nombre": "ODS#6 Agua y Saneamiento", "desc": "Acceso limitado a agua potable en comunidades vulnerables."},
+        {"nombre": "ODS#9 Industria e Innovación", "desc": "Brecha digital: falta de conectividad e internet en zonas rurales."},
+        {"nombre": "ODS#3 Salud y Bienestar", "desc": "Crisis de Salud Mental: aumento de ansiedad y depresión en jóvenes."},
+        {"nombre": "ODS#10 Reducción de Desigualdades", "desc": "Ciberestafas y vulnerabilidad digital en adultos mayores."},
+        {"nombre": "ODS#13 Acción por el Clima", "desc": "Moda Rápida: alto impacto ambiental por emisiones y uso de agua."}
     ]
     random.shuffle(PROBLEMAS)
     st.session_state.competidores = PROBLEMAS
