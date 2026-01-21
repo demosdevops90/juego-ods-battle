@@ -4,103 +4,120 @@ import qrcode
 from io import BytesIO
 
 # 1. Configuración de página
-st.set_page_config(page_title="Technovation Battle", layout="wide")
+st.set_page_config(page_title="Technovation Battle", layout="wide", initial_sidebar_state="collapsed")
 
+# 2. Inyección de estilos (Tailwind + Custom CSS)
 st.markdown("""
-    <style>
-    /* 1. FORZAR ANCHO REAL AL 92% Y CENTRAR */
-    [data-testid="stAppViewBlockContainer"] {
-        max-width: 92% !important;
-        padding: 1rem !important;
-        margin: auto !important;
-    }
-    .stApp { background-color: #F4F7F9; }
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet"/>
 
-    /* 2. CAJA DE RONDA (ESTILO TARJETA) */
-    .criterio-box {
-        background-color: #FFFFFF;
-        padding: 12px;
-        border-radius: 12px;
-        border-left: 8px solid #FF4B4B;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .criterio-box h2 { color: #1E1E1E !important; font-size: 1.1rem !important; margin: 0; }
-    .criterio-box p { color: #444 !important; font-size: 0.9rem !important; margin: 0; }
-
-    /* 3. BOTONES ESTILO TARJETA (TODO INTEGRADO) */
-    .stButton > button {
-        width: 100% !important;
-        height: 120px !important; /* Más alto para que quepa todo */
-        background-color: #FFFFFF !important;
-        color: #1E1E1E !important;
-        border-left: 8px solid #4B90FF !important; /* El borde azul de la tarjeta */
-        border-top: none !important;
-        border-right: none !important;
-        border-bottom: none !important;
-        border-radius: 12px !important;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.1) !important;
-        text-align: center !important;
-        display: block !important;
-        padding: 10px !important;
-        white-space: normal !important; /* Permite saltos de línea */
-    }
+<style>
+    /* Forzar fuentes y fondo general */
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
-    .stButton > button:hover {
-        border-left: 8px solid #FF4B4B !important;
-        background-color: #F0F7FF !important;
+    .stApp {
+        background-color: #181c26;
+        font-family: 'Space Grotesk', sans-serif;
     }
 
-    /* 4. VS CENTRADO EN MEDIO DE LAS TARJETAS */
-    .vs-text {
-        font-size: 1.8rem;
+    /* Ocultar elementos innecesarios de Streamlit */
+    header, footer {visibility: hidden;}
+    [data-testid="stHeader"] {background: rgba(0,0,0,0);}
+    
+    /* Contenedor principal */
+    [data-testid="stAppViewBlockContainer"] {
+        padding-top: 2rem !important;
+        max-width: 800px !important;
+    }
+
+    /* Estilos Glassmorphism del Header */
+    .glass-header {
+        background: rgba(24, 28, 38, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        padding: 1rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    /* VS Icon */
+    .vs-badge {
+        display: flex;
+        width: 50px;
+        height: 50px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background-color: #181c26;
+        border: 4px solid #EE40DA;
+        box-shadow: 0 0 15px rgba(238, 64, 218, 0.6);
+        color: #EE40DA;
         font-weight: 900;
-        color: #FF4B4B;
-        text-align: center;
-        margin-top: 40px; /* Alineado al centro de los botones */
+        font-style: italic;
+        margin: auto;
+        z-index: 10;
     }
 
-    /* 5. SIDEBAR (MENÚ) */
-    [data-testid="stSidebar"] { background-color: #1E1E1E !important; }
-    [data-testid="stSidebar"] h2, [data-testid="stSidebar"] p {
+    /* Estilo de los botones (Cards) */
+    div.stButton > button {
+        background-color: #272D3A !important;
         color: white !important;
-        text-align: center;
-    }
-    /* Botón reiniciar legible */
-    [data-testid="stSidebar"] .stButton > button {
-        background-color: #FF4B4B !important;
-        color: white !important;
-        height: 50px !important;
-        border-radius: 10px !important;
-        border: none !important;
-        font-size: 1rem !important;
-    }
-
-    /* EVITAR QUE SE APILEN EN MÓVIL */
-    [data-testid="stHorizontalBlock"] {
+        border-radius: 1rem !important;
+        border: 2px solid rgba(255, 255, 255, 0.1) !important;
+        padding: 2rem 1rem !important;
+        width: 100% !important;
+        min-height: 250px !important;
+        transition: all 0.3s ease !important;
         display: flex !important;
-        flex-direction: row !important;
-        gap: 10px !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        white-space: normal !important;
     }
-    </style>
-    """, unsafe_allow_html=True)
 
-# --- SIDEBAR ---
-with st.sidebar:
-    st.markdown("## MENÚ")
-    if st.button("REINICIAR PARTIDA"):
-        st.session_state.clear()
-        st.rerun()
-    st.divider()
-    st.markdown("<p>📢 Invita a jugar</p>", unsafe_allow_html=True)
-    url = "https://juego-ods-battle.streamlit.app/" 
-    qr_img = qrcode.make(url)
-    buf = BytesIO()
-    qr_img.save(buf, format="PNG")
-    st.image(buf.getvalue(), use_container_width=True)
+    /* Card A (Primary - Teal) */
+    div[data-testid="column"]:nth-of-type(1) div.stButton > button {
+        border: 2px solid #00bdc7 !important;
+        box-shadow: 0 0 15px rgba(0, 189, 199, 0.2) !important;
+    }
 
-# 2. Lógica y Datos
+    /* Card B (Challenger - Pink/White) */
+    div[data-testid="column"]:nth-of-type(3) div.stButton > button:hover {
+        border: 2px solid #EE40DA !important;
+        box-shadow: 0 0 15px rgba(238, 64, 218, 0.2) !important;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+
+    .card-desc {
+        font-size: 0.85rem;
+        color: #9ababc;
+        line-height: 1.4;
+    }
+
+    /* Progress Bar */
+    .stProgress > div > div > div > div {
+        background-color: #00bdc7 !important;
+        box-shadow: 0 0 8px #00bdc7;
+    }
+
+    /* Sidebar Dark */
+    [data-testid="stSidebar"] {
+        background-color: #11141d !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# --- INICIO LÓGICA ---
 if 'competidores' not in st.session_state:
     PROBLEMAS = [
         {"nombre": "Pobreza menstrual", "desc": "Falta de acceso a higiene"},
@@ -127,10 +144,10 @@ if 'competidores' not in st.session_state:
     st.session_state.ronda_nombre = "Octavos de final"
 
 CRITERIOS = {
-    "Octavos de final": {"t": "📍 Ronda 1: Impacto", "p": "¿Cuál es más urgente?"},
-    "Cuartos de final": {"t": "💻 Ronda 2: Viabilidad", "p": "¿Cuál es más fácil?"},
-    "Semifinal": {"t": "👤 Ronda 3: Usuario", "p": "¿Quién tiene usuarios claros?"},
-    "Gran final": {"t": "❤️ Final: Pasión", "p": "¿Cuál les motiva más?"}
+    "Octavos de final": {"t": "Impacto", "p": "¿Cuál es más urgente?"},
+    "Cuartos de final": {"t": "Viabilidad", "p": "¿Cuál es más fácil?"},
+    "Semifinal": {"t": "Usuario", "p": "¿Quién tiene usuarios claros?"},
+    "Gran final": {"t": "Pasión", "p": "¿Cuál les motiva más?"}
 }
 
 def elegir_ganador(elegido):
@@ -144,39 +161,74 @@ def elegir_ganador(elegido):
             st.session_state.ganadores_ronda_actual = []
             st.session_state.indice_duelo = 0
             etapas = {8: "Cuartos de final", 4: "Semifinal", 2: "Gran final"}
-            st.session_state.ronda_nombre = etapas.get(len(st.session_state.competidores), "Final")
+            st.session_state.ronda_nombre = etapas.get(len(st.session_state.competidores), "Gran final")
 
-# --- UI ---
-st.markdown("<h1 style='text-align:center; color:black;'>🏆 Technovation Battle</h1>", unsafe_allow_html=True)
+# --- UI RENDER ---
+
+# Header Estilo Glass
+info = CRITERIOS.get(st.session_state.ronda_nombre, CRITERIOS["Octavos de final"])
+st.markdown(f"""
+    <div class="glass-header">
+        <span style="color:#00bdc7; font-size:10px; text-transform:uppercase; letter-spacing:0.2em; font-weight:bold;">Tournament</span>
+        <h2 style="color:white; font-size:1.5rem; font-weight:bold; margin:0;">{st.session_state.ronda_nombre}: {info['t']}</h2>
+        <p style="color:#9ababc; font-size:0.9rem; margin-top:5px;">{info['p']}</p>
+    </div>
+""", unsafe_allow_html=True)
 
 if st.session_state.ronda_nombre == "¡Ganador!":
     ganador = st.session_state.ganadores_ronda_actual[0]
     st.balloons()
-    st.markdown(f"<div class='criterio-box' style='padding:40px;'><h2>¡Ganador!</h2><h1 style='color:#FF4B4B !important;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
-    if st.button("NUEVA PARTIDA"):
+    st.markdown(f"""
+        <div class="glass-header" style="border: 2px solid #00bdc7;">
+            <h1 style="color:#00bdc7; font-size:3rem; font-weight:900;">🏆</h1>
+            <h2 style="color:white;">EL GANADOR ES:</h2>
+            <h1 style="color:white; font-size:2.5rem; text-transform:uppercase;">{ganador['nombre']}</h1>
+        </div>
+    """, unsafe_allow_html=True)
+    if st.button("JUGAR DE NUEVO"):
         st.session_state.clear()
         st.rerun()
 else:
-    info = CRITERIOS.get(st.session_state.ronda_nombre, CRITERIOS["Octavos de final"])
-    st.markdown(f'<div class="criterio-box"><h2>{info["t"]}</h2><p>{info["p"]}</p></div>', unsafe_allow_html=True)
-
+    # Battle Arena
     i = st.session_state.indice_duelo
     p1, p2 = st.session_state.competidores[i], st.session_state.competidores[i+1]
+    
+    # Texto de batalla
+    st.markdown(f'<p style="text-align:center; color:#00bdc7; font-weight:bold; letter-spacing:0.2em; font-size:12px; margin-bottom:20px;">BATTLE {int(i/2)+1} OF {int(len(st.session_state.competidores)/2)}</p>', unsafe_allow_html=True)
 
-    col1, col_v, col2 = st.columns([10, 2, 10])
+    col1, col_v, col2 = st.columns([10, 3, 10])
     
     with col1:
-        # Metemos la descripción y el nombre dentro del mismo botón usando saltos de línea
-        if st.button(f"{p1['desc']}\n\n{p1['nombre']}", key=f"btn_{i}"):
+        content1 = f"<div class='card-title'>{p1['nombre']}</div><div class='card-desc'>{p1['desc']}</div>"
+        if st.button(p1['nombre'], key=f"btn_{i}", help=p1['desc']):
             elegir_ganador(p1)
             st.rerun()
+        st.markdown(f"<div style='text-align:center; color:#9ababc; font-size:0.8rem; margin-top:-30px;'>{p1['desc']}</div>", unsafe_allow_html=True)
 
     with col_v:
-        st.markdown('<p class="vs-text">VS</p>', unsafe_allow_html=True)
+        st.markdown('<div style="height:100px"></div><div class="vs-badge">VS</div>', unsafe_allow_html=True)
 
     with col2:
-        if st.button(f"{p2['desc']}\n\n{p2['nombre']}", key=f"btn_{i+1}"):
+        if st.button(p2['nombre'], key=f"btn_{i+1}", help=p2['desc']):
             elegir_ganador(p2)
             st.rerun()
+        st.markdown(f"<div style='text-align:center; color:#9ababc; font-size:0.8rem; margin-top:-30px;'>{p2['desc']}</div>", unsafe_allow_html=True)
 
-    st.progress((int(i/2) + 1) / (len(st.session_state.competidores)/2))
+    # Footer con Progreso
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    progreso = (int(i/2) + 1) / (len(st.session_state.competidores)/2)
+    st.progress(progreso)
+    st.markdown(f'<p style="text-align:right; color:#00bdc7; font-size:10px; font-weight:bold;">{int(progreso*100)}% COMPLETADO</p>', unsafe_allow_html=True)
+
+# Sidebar para QR y Reset
+with st.sidebar:
+    st.markdown("<h2 style='color:white;'>OPCIONES</h2>", unsafe_allow_html=True)
+    if st.button("REINICIAR TODO"):
+        st.session_state.clear()
+        st.rerun()
+    st.divider()
+    url = "https://tu-app.streamlit.app" 
+    qr_img = qrcode.make(url)
+    buf = BytesIO()
+    qr_img.save(buf, format="PNG")
+    st.image(buf.getvalue(), caption="¡Invita a otros!")
