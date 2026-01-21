@@ -3,19 +3,19 @@ import random
 import qrcode
 from io import BytesIO
 
-# 1. Configuración de página - Forzamos el modo oscuro y eliminamos espacios
+# 1. Configuración de página
 st.set_page_config(page_title="Technovation Battle", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. Inyección de estilos optimizados para pantalla completa (No Scroll)
+# 2. CSS Restaurado y Ajustado (Alto 15vh y Menú lateral)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
-    /* Evitar scroll en el body */
     html, body, [data-testid="stAppViewBlockContainer"] {
         max-height: 100vh;
         overflow: hidden !important;
         font-family: 'Space Grotesk', sans-serif;
+        background-color: #181c26;
     }
 
     .stApp {
@@ -24,98 +24,93 @@ st.markdown("""
         background-size: 24px 24px;
     }
 
-    /* Reducir márgenes superiores de Streamlit */
-    [data-testid="stAppViewBlockContainer"] {
-        max-width: 1100px !important;
-        padding-top: 1rem !important;
-        padding-bottom: 0rem !important;
-    }
-
     header, footer {visibility: hidden;}
 
-    /* Header más compacto */
+    [data-testid="stAppViewBlockContainer"] {
+        max-width: 950px !important;
+        padding: 1rem !important;
+    }
+
+    /* Separación mínima entre columnas */
+    [data-testid="stHorizontalBlock"] {
+        gap: 0px !important;
+    }
+
+    /* Sidebar Estilo Dark */
+    [data-testid="stSidebar"] {
+        background-color: #11141d !important;
+        color: white !important;
+    }
+
     .glass-header {
         background: rgba(24, 28, 38, 0.7);
         backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
-        padding: 0.8rem 1.5rem;
+        padding: 0.8rem;
         text-align: center;
         margin-bottom: 1rem;
     }
 
-    /* BOTONES TIPO CARD OPTIMIZADOS (Altura basada en pantalla) */
+    /* ALTO AL 15% DE LA PANTALLA */
     div.stButton > button {
         width: 100% !important;
-        height: 50vh !important; /* Ocupa exactamente el 50% de la altura visible */
+        height: 15vh !important;
+        min-height: 15vh !important;
         background-color: #272D3A !important;
         color: white !important;
-        border-radius: 1.2rem !important;
-        padding: 1.5rem !important;
-        transition: all 0.3s ease !important;
+        border-radius: 1rem !important;
+        padding: 0.5rem !important;
         border: 2px solid rgba(255, 255, 255, 0.1) !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
+        transition: all 0.2s ease;
+        line-height: 1.2 !important;
     }
 
-    /* Card Izquierda */
     div[data-testid="column"]:nth-of-type(1) div.stButton > button {
-        border: 2px solid #00bdc7 !important;
-        box-shadow: 0 0 15px rgba(0, 189, 199, 0.1) !important;
+        border-color: #00bdc7 !important;
+        box-shadow: 0 0 10px rgba(0, 189, 199, 0.1) !important;
+        margin-right: -5px !important;
     }
 
-    /* Card Derecha */
+    div[data-testid="column"]:nth-of-type(3) div.stButton > button {
+        margin-left: -5px !important;
+    }
+
     div[data-testid="column"]:nth-of-type(3) div.stButton > button:hover {
-        border: 2px solid #EE40DA !important;
-        box-shadow: 0 0 20px rgba(238, 64, 218, 0.2) !important;
+        border-color: #EE40DA !important;
+        box-shadow: 0 0 10px rgba(238, 64, 218, 0.2) !important;
     }
 
-    /* VS Ajustado */
+    /* VS Ultra pegado */
     .vs-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 50vh;
+        height: 15vh;
+        z-index: 10;
     }
     .vs-circle {
-        width: 50px;
-        height: 50px;
+        width: 38px;
+        height: 38px;
         background: #181c26;
-        border: 3px solid #EE40DA;
+        border: 2px solid #EE40DA;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #EE40DA;
         font-weight: 900;
-        font-size: 1.2rem;
-        box-shadow: 0 0 15px #EE40DA;
-    }
-
-    /* Texto dentro de las Cards */
-    .card-title-internal {
-        font-size: clamp(1.2rem, 3vw, 1.8rem);
-        font-weight: 800;
-        text-transform: uppercase;
-        margin-bottom: 8px;
-    }
-    .card-desc-internal {
-        color: #9ababc;
-        font-size: clamp(0.8rem, 1.5vw, 0.95rem);
-        line-height: 1.3;
-        text-align: center;
-    }
-
-    /* Progress bar pegada abajo */
-    .stProgress {
-        margin-top: 1rem;
+        font-size: 0.8rem;
+        box-shadow: 0 0 10px rgba(238, 64, 218, 0.5);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- LÓGICA DE DATOS (Mantenida) ---
+# --- LÓGICA Y DATOS (RESTAURADOS) ---
 if 'competidores' not in st.session_state:
     PROBLEMAS = [
         {"nombre": "Pobreza menstrual", "desc": "Falta de acceso a higiene"},
@@ -142,10 +137,10 @@ if 'competidores' not in st.session_state:
     st.session_state.ronda_nombre = "Octavos de final"
 
 CRITERIOS = {
-    "Octavos de final": {"t": "Impacto", "p": "¿Cuál es más urgente?"},
-    "Cuartos de final": {"t": "Viabilidad", "p": "¿Cuál es más fácil?"},
-    "Semifinal": {"t": "Usuario", "p": "¿Quién tiene usuarios claros?"},
-    "Gran final": {"t": "Pasión", "p": "¿Cuál les motiva más?"}
+    "Octavos de final": {"t": "📍 Ronda 1: Impacto", "p": "¿Cuál es más urgente?"},
+    "Cuartos de final": {"t": "💻 Ronda 2: Viabilidad", "p": "¿Cuál es más fácil?"},
+    "Semifinal": {"t": "👤 Ronda 3: Usuario", "p": "¿Quién tiene usuarios claros?"},
+    "Gran final": {"t": "❤️ Final: Pasión", "p": "¿Cuál les motiva más?"}
 }
 
 def elegir_ganador(elegido):
@@ -159,37 +154,40 @@ def elegir_ganador(elegido):
             st.session_state.ganadores_ronda_actual = []
             st.session_state.indice_duelo = 0
             etapas = {8: "Cuartos de final", 4: "Semifinal", 2: "Gran final"}
-            st.session_state.ronda_nombre = etapas.get(len(st.session_state.competidores), "Gran final")
+            st.session_state.ronda_nombre = etapas.get(len(st.session_state.competidores), "Final")
 
-# --- UI RENDER ---
+# --- SIDEBAR (RESTAURADO) ---
+with st.sidebar:
+    st.markdown("## MENÚ")
+    if st.button("REINICIAR PARTIDA"):
+        st.session_state.clear()
+        st.rerun()
+    st.divider()
+    st.markdown("<p style='color:white;'>📢 Invita a jugar</p>", unsafe_allow_html=True)
+    url = "https://tu-app.streamlit.app/" # Cambia por tu URL
+    qr_img = qrcode.make(url)
+    buf = BytesIO()
+    qr_img.save(buf, format="PNG")
+    st.image(buf.getvalue(), use_container_width=True)
 
-info = CRITERIOS.get(st.session_state.ronda_nombre, CRITERIOS["Octavos de final"])
-
-# Header Compacto
-st.markdown(f"""
-    <div class="glass-header">
-        <h2 style="color:white; margin:0; font-size:1.4rem;">{st.session_state.ronda_nombre}: {info['t']}</h2>
-        <p style="color:#00bdc7; margin:0; font-size:0.9rem; font-weight:bold;">{info['p']}</p>
-    </div>
-""", unsafe_allow_html=True)
-
+# --- UI PRINCIPAL ---
 if st.session_state.ronda_nombre == "¡Ganador!":
     ganador = st.session_state.ganadores_ronda_actual[0]
     st.balloons()
-    st.markdown(f"<div class='glass-header' style='border:2px solid #00bdc7'><h2 style='color:#00bdc7'>GANADOR FINAL</h2><h1 style='color:white;'>{ganador['nombre']}</h1></div>", unsafe_allow_html=True)
-    if st.button("NUEVA PARTIDA"):
-        st.session_state.clear()
-        st.rerun()
+    st.markdown(f'<div class="glass-header"><h2 style="color:#00bdc7">¡Ganador!</h2><h1 style="color:white">{ganador["nombre"]}</h1></div>', unsafe_allow_html=True)
 else:
+    info = CRITERIOS.get(st.session_state.ronda_nombre, CRITERIOS["Octavos de final"])
+    st.markdown(f'<div class="glass-header"><h2 style="color:white; margin:0; font-size:1.1rem;">{info["t"]}</h2><p style="color:#9ababc; margin:0; font-size:0.8rem;">{info["p"]}</p></div>', unsafe_allow_html=True)
+
     i = st.session_state.indice_duelo
     p1, p2 = st.session_state.competidores[i], st.session_state.competidores[i+1]
     
-    # Grid de Batalla
-    col1, col_v, col2 = st.columns([10, 2, 10])
+    st.markdown(f'<p style="text-align:center; color:#00bdc7; font-size:0.7rem; font-weight:bold; letter-spacing:0.1em; margin-bottom:5px;">BATALLA {int(i/2)+1} / {int(len(st.session_state.competidores)/2)}</p>', unsafe_allow_html=True)
+
+    col1, col_v, col2 = st.columns([10, 1.2, 10])
     
     with col1:
-        # Texto formateado dentro del botón
-        if st.button(f"{p1['nombre']}\n\n{p1['desc']}", key=f"btn_{i}"):
+        if st.button(f"**{p1['nombre']}**\n\n{p1['desc']}", key=f"btn_{i}"):
             elegir_ganador(p1)
             st.rerun()
 
@@ -197,17 +195,10 @@ else:
         st.markdown('<div class="vs-container"><div class="vs-circle">VS</div></div>', unsafe_allow_html=True)
 
     with col2:
-        if st.button(f"{p2['nombre']}\n\n{p2['desc']}", key=f"btn_{i+1}"):
+        if st.button(f"**{p2['nombre']}**\n\n{p2['desc']}", key=f"btn_{i+1}"):
             elegir_ganador(p2)
             st.rerun()
 
-    # Progreso
+    st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
     progreso = (int(i/2) + 1) / (len(st.session_state.competidores)/2)
     st.progress(progreso)
-    st.markdown(f'<p style="text-align:center; color:#9ababc; font-size:0.7rem; margin:0;">BATTLE {int(i/2)+1} / {int(len(st.session_state.competidores)/2)}</p>', unsafe_allow_html=True)
-
-# Sidebar
-with st.sidebar:
-    if st.button("REINICIAR"):
-        st.session_state.clear()
-        st.rerun()
